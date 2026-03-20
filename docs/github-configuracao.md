@@ -22,7 +22,7 @@ Não é preciso outro tipo de “login” especial para o repo em si: **branch p
 ### Segurança (Settings → Security)
 
 - Ativar **Private vulnerability reporting** (recomendado) — alinha com [SECURITY.md](../SECURITY.md).
-- **Dependabot alerts** — ativado por defeito; rever **Dependabot security updates** se quiseres PRs automáticos só para CVEs.
+- **Dependabot alerts** — ativado por defeito na UI (alertas de CVE); **version updates** via `.github/dependabot.yml` estão **desativadas** neste repo.
 - **Secret scanning** e **push protection** — disponíveis conforme o plano; úteis para evitar commits acidentais de tokens.
 
 ### Actions (Settings → Actions → General)
@@ -56,7 +56,7 @@ Isto **protege o repo** contra merges acidentais e mantém a história alinhada 
 
 - [LICENSE](../LICENSE) (Apache 2.0) e [NOTICE](../NOTICE)
 - [CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md), [CONTRIBUTING.md](../CONTRIBUTING.md), [SECURITY.md](../SECURITY.md)
-- [Dependabot](../.github/dependabot.yml) (Go, Actions, Docker)
+- Dependabot version updates **desativadas** (sem `dependabot.yml`); alertas de segurança continuam configuráveis em **Settings → Security**
 - Templates de [issue](../.github/ISSUE_TEMPLATE/) e [PR](../.github/pull_request_template.md)
 - Workflows com permissões mínimas onde aplicável (`contents: read` no CI)
 
@@ -65,7 +65,7 @@ Isto **protege o repo** contra merges acidentais e mantém a história alinhada 
 | Prioridade | Ação |
 | ---------- | ---- |
 | Alta | 2FA, branch protection no `main`, vulnerabilidades privadas |
-| Média | Topics, Dependabot, revisar permissões de Actions |
+| Média | Topics, alertas de dependências, revisar permissões de Actions |
 | Baixa | Discussions, wiki, README social preview |
 
 Se quiseres endurecer ainda mais: **revisões obrigatórias** (2 reviewers), **signed commits**, e políticas ao nível da **organização** (se aplicável).
