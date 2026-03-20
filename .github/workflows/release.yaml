@@ -64,6 +64,7 @@ jobs:
 
           cp config/crd/timgcpsmsecret-crd.yaml release/
           cp config/crd/timgcpsmsecretconfig-crd.yaml release/
+          cp config/crd/timgcpsmclusterconfig-crd.yaml release/
 
           cat > release/install.yaml <<EOF
           # TIMGCPSMOPERATOR Installation
@@ -75,6 +76,8 @@ jobs:
           $(cat config/crd/timgcpsmsecret-crd.yaml)
           ---
           $(cat config/crd/timgcpsmsecretconfig-crd.yaml)
+          ---
+          $(cat config/crd/timgcpsmclusterconfig-crd.yaml)
           ---
           $(cat config/manager/namespace.yaml)
           ---
@@ -96,6 +99,7 @@ jobs:
             release/install.yaml
             release/timgcpsmsecret-crd.yaml
             release/timgcpsmsecretconfig-crd.yaml
+            release/timgcpsmclusterconfig-crd.yaml
             release/examples.tar.gz
           generate_release_notes: true
           body: |
@@ -110,6 +114,7 @@ jobs:
             ```bash
             kubectl apply -f https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/timgcpsmsecret-crd.yaml
             kubectl apply -f https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/timgcpsmsecretconfig-crd.yaml
+            kubectl apply -f https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/timgcpsmclusterconfig-crd.yaml
             ```
 
             ### Docker Image

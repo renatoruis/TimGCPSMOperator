@@ -10,7 +10,7 @@ kubectl apply -f https://github.com/renatoruis/TimGCPSMOperator/releases/latest/
 
 The bundle installs:
 
-- CRDs: `timgcpsmsecrets.secrets.tim.operator`, `timgcpsmsecretconfigs.secrets.tim.operator`
+- CRDs: `timgcpsmsecrets`, `timgcpsmsecretconfigs`, `timgcpsmclusterconfigs` (group `secrets.tim.operator`)
 - Namespace: `timgcpsm-operator-system`
 - ClusterRole `timgcpsm-operator-role`, ServiceAccount `timgcpsm-operator`, ClusterRoleBinding
 - Deployment `timgcpsm-operator-controller`
@@ -20,6 +20,7 @@ The bundle installs:
 ```bash
 kubectl apply -f https://github.com/renatoruis/TimGCPSMOperator/releases/latest/download/timgcpsmsecret-crd.yaml
 kubectl apply -f https://github.com/renatoruis/TimGCPSMOperator/releases/latest/download/timgcpsmsecretconfig-crd.yaml
+kubectl apply -f https://github.com/renatoruis/TimGCPSMOperator/releases/latest/download/timgcpsmclusterconfig-crd.yaml
 ```
 
 ## From this repo
@@ -27,6 +28,7 @@ kubectl apply -f https://github.com/renatoruis/TimGCPSMOperator/releases/latest/
 ```bash
 kubectl apply -f config/crd/timgcpsmsecret-crd.yaml
 kubectl apply -f config/crd/timgcpsmsecretconfig-crd.yaml
+kubectl apply -f config/crd/timgcpsmclusterconfig-crd.yaml
 kubectl create namespace timgcpsm-operator-system
 kubectl apply -f config/rbac/service_account.yaml
 kubectl apply -f config/rbac/role.yaml
@@ -55,11 +57,15 @@ kubectl delete -f https://github.com/renatoruis/TimGCPSMOperator/releases/latest
 
 ## First resources
 
+**Cluster default (`projectId` uma vez para todo o cluster):**
+
 ```bash
-kubectl apply -f examples/timgcpsmsecretconfig-example.yaml
-kubectl apply -f examples/timgcpsmsecret-with-config.yaml
+kubectl apply -f examples/timgcpsmclusterconfig-example.yaml
+kubectl apply -f examples/timgcpsmsecret-cluster-default-only.yaml
 kubectl get tgs
 ```
+
+**Ou** config por namespace (`TimGcpSmSecretConfig` + `gcpSmConfig`): ver `examples/timgcpsmsecretconfig-example.yaml` e `timgcpsmsecret-with-config.yaml`.
 
 ## Acesso ao Secret Manager (GCP)
 

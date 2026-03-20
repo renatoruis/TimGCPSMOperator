@@ -11,7 +11,7 @@ This is intentionally **not** External Secrets Operator: one backend, one workfl
 ## Features
 
 - **GCP Secret Manager only** — reads secret versions via Application Default Credentials (Workload Identity on GKE).
-- **Centralized project config** — optional `TimGcpSmSecretConfig` with `projectId` for many `TimGcpSmSecret` resources.
+- **Project defaults** — cluster-wide `TimGcpSmClusterConfig` (ex. nome `default`) ou, por namespace, `TimGcpSmSecretConfig`; ainda podes fixar `projectId` em cada `TimGcpSmSecret`.
 - **Polling + hash** — periodic sync (`syncInterval`, default `5m`) so changes outside the cluster are picked up.
 - **Deployment restart** — optional `deploymentName`; rollout when secret payload changes.
 - **Payload modes** — `decodeFormat: text` (single key, default key `value`) or `json` (JSON object → multiple keys).
@@ -37,6 +37,7 @@ kubectl apply -f https://github.com/renatoruis/TimGCPSMOperator/releases/latest/
 ```bash
 kubectl apply -f config/crd/timgcpsmsecret-crd.yaml
 kubectl apply -f config/crd/timgcpsmsecretconfig-crd.yaml
+kubectl apply -f config/crd/timgcpsmclusterconfig-crd.yaml
 kubectl apply -f config/manager/namespace.yaml
 kubectl apply -f config/rbac/role.yaml
 kubectl apply -f config/rbac/service_account.yaml
@@ -53,27 +54,34 @@ make docker-build IMG=ghcr.io/renatoruis/timgcpsm-operator:v1.0.0
 
 ## Quick start
 
-1. **Optional:** create `TimGcpSmSecretConfig` with `spec.projectId` (see `examples/timgcpsmsecretconfig-example.yaml`).
-2. Create `TimGcpSmSecret` with `secretId`, `secretName`, and either `projectId` or `gcpSmConfig` (see `examples/`).
+1. **Recomendado (um `projectId` para o cluster):** aplica `examples/timgcpsmclusterconfig-example.yaml` (`TimGcpSmClusterConfig` nome **`default`**).
+2. Cria `TimGcpSmSecret` com `secretId` + `secretName` — podes omitir `projectId` se existir `TimGcpSmClusterConfig/default` (ver `examples/timgcpsmsecret-cluster-default-only.yaml`).
+3. **Opcional por namespace/equipa:** `TimGcpSmSecretConfig` namespaced + `gcpSmConfig` quando precisares de outro projeto só nesse namespace.
 
 ```bash
-kubectl apply -f examples/timgcpsmsecretconfig-example.yaml
-kubectl apply -f examples/timgcpsmsecret-with-config.yaml
+kubectl apply -f examples/timgcpsmclusterconfig-example.yaml
+kubectl apply -f examples/timgcpsmsecret-cluster-default-only.yaml
 ```
 
 ## CRDs
 
-| Resource | Short name | Purpose |
-|----------|------------|---------|
-| `TimGcpSmSecret` | `tgs` | Sync one GSM secret into a Kubernetes `Secret` |
-| `TimGcpSmSecretConfig` | `tgsc` | Default GCP `projectId` |
+| Resource | Short name | Scope | Purpose |
+|----------|------------|-------|---------|
+| `TimGcpSmSecret` | `tgs` | Namespaced | Sync one GSM secret into a Kubernetes `Secret` |
+| `TimGcpSmSecretConfig` | `tgsc` | Namespaced | `projectId` por namespace (override opcional) |
+| `TimGcpSmClusterConfig` | `tgcc` | **Cluster** | `projectId` por defeito para todo o cluster |
+
+**Resolução de `projectId` no `TimGcpSmSecret`:** `spec.projectId` → senão `spec.gcpSmConfig` (namespaced) → senão `spec.clusterConfig` (nome de um `TimGcpSmClusterConfig`) → senão o recurso cluster **`TimGcpSmClusterConfig/default`**. Se nada existir, o sync falha com erro explícito.
+
+O **operador** corre no namespace `timgcpsm-operator-system`; os **CRs** `TimGcpSmSecret` podem estar em qualquer namespace.
 
 ### `TimGcpSmSecret` spec (summary)
 
 | Field | Description |
 |-------|-------------|
-| `projectId` | GCP project (omit if using `gcpSmConfig`) |
-| `gcpSmConfig` / `gcpSmConfigNamespace` | Reference to `TimGcpSmSecretConfig` |
+| `projectId` | GCP project (highest priority if set) |
+| `gcpSmConfig` / `gcpSmConfigNamespace` | Reference to namespaced `TimGcpSmSecretConfig` |
+| `clusterConfig` | Name of a `TimGcpSmClusterConfig` (cluster scope) for `projectId` |
 | `secretId` | Secret Manager secret id (short name) |
 | `secretVersion` | Version id or `latest` (default) |
 | `secretName` | Target Kubernetes `Secret` name |
