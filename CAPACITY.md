@@ -18,10 +18,12 @@ This document provides capacity planning guidance and performance characteristic
 
 ### Resource Limits (Operator Pod)
 
-| Resource | Request | Limit | Recommended For |
-|----------|---------|-------|-----------------|
-| **CPU** | 500m | 2 cores | Up to 5000 TimGcpSmSecrets |
-| **Memory** | 512Mi | 1Gi | Up to 5000 TimGcpSmSecrets |
+Valores em [`config/manager/deployment.yaml`](config/manager/deployment.yaml) são **conservadores** para um controller leve (só leitura GSM + API Kubernetes). Ajusta **limits** se monitorizares throttling ou OOM em escala muito grande.
+
+| Resource | Request | Limit | Notas |
+|----------|---------|-------|-------|
+| **CPU** | 100m | 500m | Típico para réplicas únicas com baixo uso médio |
+| **Memory** | 128Mi | 512Mi | Sobe o limit se tiveres milhares de CRs em cache |
 
 ---
 
@@ -124,12 +126,12 @@ resources:
     memory: 128Mi
   limits:
     cpu: 500m
-    memory: 256Mi
+    memory: 512Mi
 ```
 
 ### Medium Scale (100 - 5,000 TimGcpSmSecrets)
 
-**Current configuration (already applied).**
+**Mantém os defaults do manifest ou aumenta só se métricas mostrarem pressão.**
 
 ```yaml
 MaxConcurrentReconciles: 10
@@ -138,10 +140,10 @@ MaxConcurrentReconciles: 10
 ```yaml
 resources:
   requests:
-    cpu: 500m
-    memory: 512Mi
+    cpu: 250m
+    memory: 256Mi
   limits:
-    cpu: "2"
+    cpu: "1"
     memory: 1Gi
 ```
 

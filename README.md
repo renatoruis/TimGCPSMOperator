@@ -19,8 +19,8 @@ This is intentionally **not** External Secrets Operator: one backend, one workfl
 
 ## Requirements
 
-- GKE (or GCP) with **Workload Identity** or other ADC for the operator pod’s GCP identity.
-- IAM: `roles/secretmanager.secretAccessor` on the secrets used (typically via WI on the operator’s GCP service account).
+- GKE (or GCP) com identidade GCP para o pod — em GKE o habitual é [**Workload Identity**](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity). **O cluster não ganha acesso ao Secret Manager só por existir:** é preciso IAM na GCP (ver [docs/gcp-permissoes.md](docs/gcp-permissoes.md)).
+- **GCP IAM (só leitura):** o código usa apenas [`AccessSecretVersion`](https://cloud.google.com/secret-manager/docs/reference/libraries) — não cria, altera nem apaga segredos no GSM. Concede ao Service Account GCP usado pelo pod **`roles/secretmanager.secretAccessor`** nos segredos (ou projeto) necessários.
 
 ## Installation
 
