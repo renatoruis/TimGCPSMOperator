@@ -5,7 +5,7 @@ O bundle cria o namespace **`timgcpsm-operator-system`** (exclusivo para o contr
 ## Quick install (release)
 
 ```bash
-kubectl apply -f https://github.com/renatoruis/TimGcpSmOperator/releases/latest/download/install.yaml
+kubectl apply -f https://github.com/renatoruis/TimGCPSMOperator/releases/latest/download/install.yaml
 ```
 
 The bundle installs:
@@ -18,8 +18,8 @@ The bundle installs:
 ## Manual install (CRDs only)
 
 ```bash
-kubectl apply -f https://github.com/renatoruis/TimGcpSmOperator/releases/latest/download/timgcpsmsecret-crd.yaml
-kubectl apply -f https://github.com/renatoruis/TimGcpSmOperator/releases/latest/download/timgcpsmsecretconfig-crd.yaml
+kubectl apply -f https://github.com/renatoruis/TimGCPSMOperator/releases/latest/download/timgcpsmsecret-crd.yaml
+kubectl apply -f https://github.com/renatoruis/TimGCPSMOperator/releases/latest/download/timgcpsmsecretconfig-crd.yaml
 ```
 
 ## From this repo
@@ -49,7 +49,7 @@ Re-apply the same `install.yaml` for the target version (CRDs are backward-compa
 ## Uninstall
 
 ```bash
-kubectl delete -f https://github.com/renatoruis/TimGcpSmOperator/releases/latest/download/install.yaml
+kubectl delete -f https://github.com/renatoruis/TimGCPSMOperator/releases/latest/download/install.yaml
 # or delete resources in reverse order; then CRDs if desired
 ```
 

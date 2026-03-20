@@ -1,0 +1,39 @@
+name: Bug report
+description: Something is not working as expected
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to report a bug.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Describe the behavior and what you expected.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: How to reproduce
+      description: Steps, YAML snippets (redact secrets), cluster version.
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: version
+    attributes:
+      label: Version / environment
+      description: Operator image tag, Kubernetes version, GKE/other, GKE version if relevant.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs (optional)
+      description: Relevant controller logs (redact tokens/secrets).
+      render: markdown

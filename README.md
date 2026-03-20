@@ -1,6 +1,8 @@
 # TIMGCPSMOPERATOR (timgcpsm-operator)
 
-![GitHub Release](https://img.shields.io/github/v/release/renatoruis/TimGcpSmOperator)
+[![GitHub Release](https://img.shields.io/github/v/release/renatoruis/TimGCPSMOperator)](https://github.com/renatoruis/TimGCPSMOperator/releases)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![CI](https://github.com/renatoruis/TimGCPSMOperator/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/renatoruis/TimGCPSMOperator/actions/workflows/ci.yaml)
 
 Kubernetes operator **only for [Google Cloud Secret Manager](https://cloud.google.com/secret-manager)**. It syncs secrets into Kubernetes `Secret` objects on a configurable interval, detects changes (including updates made in the **GCP console** or **Secret Manager API**), and can **restart a `Deployment`** when the synced data changes.
 
@@ -27,7 +29,7 @@ O operador instala-se num **namespace dedicado** — `timgcpsm-operator-system` 
 ### Release (when published)
 
 ```bash
-kubectl apply -f https://github.com/renatoruis/TimGcpSmOperator/releases/latest/download/install.yaml
+kubectl apply -f https://github.com/renatoruis/TimGCPSMOperator/releases/latest/download/install.yaml
 ```
 
 ### From this repository
@@ -91,8 +93,15 @@ kubectl logs -n timgcpsm-operator-system deployment/timgcpsm-operator-controller
 
 ## Capacity
 
-See [CAPACITY.md](CAPACITY.md) for tuning notes (same reconciliation model as the previous Vault-focused operator: `MaxConcurrentReconciles: 10`).
+See [CAPACITY.md](CAPACITY.md) for tuning notes (e.g. `MaxConcurrentReconciles: 10`).
+
+## Community
+
+- [Contributing](CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security policy](SECURITY.md) — report vulnerabilities **privately** (not via public issues)
+- [Checklist de configuração do repositório (GitHub)](docs/github-configuracao.md) *(mantenedores)*
 
 ## License
 
-See repository license file.
+Licensed under the [Apache License 2.0](LICENSE). See [NOTICE](NOTICE) for attribution.

@@ -37,11 +37,11 @@ git push origin v1.0.0
 
 ```bash
 # Quick install (everything)
-kubectl apply -f https://github.com/renatoruis/TimGcpSmOperator/releases/download/v1.0.0/install.yaml
+kubectl apply -f https://github.com/renatoruis/TimGCPSMOperator/releases/download/v1.0.0/install.yaml
 
 # Or install CRDs only
-kubectl apply -f https://github.com/renatoruis/TimGcpSmOperator/releases/download/v1.0.0/timgcpsmsecret-crd.yaml
-kubectl apply -f https://github.com/renatoruis/TimGcpSmOperator/releases/download/v1.0.0/timgcpsmsecretconfig-crd.yaml
+kubectl apply -f https://github.com/renatoruis/TimGCPSMOperator/releases/download/v1.0.0/timgcpsmsecret-crd.yaml
+kubectl apply -f https://github.com/renatoruis/TimGCPSMOperator/releases/download/v1.0.0/timgcpsmsecretconfig-crd.yaml
 ```
 
 ## CI Workflows
@@ -135,7 +135,7 @@ Make sure the GitHub Container Registry package is public:
 
 ## Repository
 
-GitHub: https://github.com/renatoruis/TimGcpSmOperator
+GitHub: https://github.com/renatoruis/TimGCPSMOperator
 
 ## Best Practices
 
