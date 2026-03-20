@@ -68,6 +68,12 @@ kubectl apply -f examples/timgcpsmsecret-with-config.yaml
 | `TimGcpSmSecret` | `tgs` | Sync one GSM secret into a Kubernetes `Secret` |
 | `TimGcpSmSecretConfig` | `tgsc` | Default GCP `projectId` |
 
+**Scope:** ambos os CRDs são **sempre namespaced** (`ClusterRole` só no RBAC do operador). **Não existe** recurso cluster-wide tipo “config global único”.
+
+Para **um único `projectId` partilhado por todo o cluster**, cria **um** `TimGcpSmSecretConfig` num namespace central (ex. `timgcpsm-operator-system`) e, em cada `TimGcpSmSecret` noutros namespaces, usa `gcpSmConfig: <nome>` e `gcpSmConfigNamespace: timgcpsm-operator-system`. Alternativa: define `projectId` diretamente em cada `TimGcpSmSecret` sem config partilhado.
+
+O **operador** corre num namespace fixo; os **CRs** `TimGcpSmSecret` / `TimGcpSmSecretConfig` podem existir em **qualquer** namespace (conforme RBAC dos utilizadores).
+
 ### `TimGcpSmSecret` spec (summary)
 
 | Field | Description |
