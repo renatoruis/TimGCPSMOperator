@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Create CRDs artifact
         run: |
@@ -37,7 +37,7 @@ jobs:
           cp config/crd/timgcpsmsecretconfig-crd.yaml dist/
 
       - name: Upload CRDs as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: crds
           path: dist/
