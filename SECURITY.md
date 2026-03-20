@@ -25,9 +25,12 @@ We aim to acknowledge reports within a few business days and coordinate disclosu
 
 ## Operator security notes
 
-This operator syncs data from **Google Cloud Secret Manager** into **Kubernetes Secrets**. Hardening:
+This operator syncs data from **Google Cloud Secret Manager** into **Kubernetes Secrets**. It only calls **read** APIs (`AccessSecretVersion`); it does **not** create, update, or delete secrets in GSM.
 
-- Use **Workload Identity** (or equivalent) with least privilege (`secretmanager.secretAccessor` only on required secrets).
+Hardening:
+
+- Use **Workload Identity** (or equivalent) with least privilege: **`roles/secretmanager.secretAccessor`** scoped to the specific secrets (or projects) you reference in `TimGcpSmSecret` — never Secret Admin.
+- Step-by-step (GKE, `gcloud`, KSA annotation): [docs/gcp-permissoes.md](docs/gcp-permissoes.md).
 - Restrict who can create or edit `TimGcpSmSecret` / `TimGcpSmSecretConfig` CRDs (Kubernetes RBAC).
 - Treat `Secret` objects in the cluster as sensitive; use encryption at rest and network policies as appropriate.
 

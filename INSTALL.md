@@ -61,4 +61,6 @@ kubectl apply -f examples/timgcpsmsecret-with-config.yaml
 kubectl get tgs
 ```
 
-Ensure the operator pod’s GCP identity can access Secret Manager (`secretAccessor` on the relevant secrets).
+## Acesso ao Secret Manager (GCP)
+
+O `kubectl apply` **não** configura permissões na GCP. Tens de configurar **Workload Identity** (GKE) ou outra forma de ADC e IAM — passo a passo em **[docs/gcp-permissoes.md](docs/gcp-permissoes.md)** (inclui exemplo de `gcloud` e anotação no `ServiceAccount` `timgcpsm-operator`).
