@@ -24,5 +24,10 @@ if [ -f "config/crd/secrets.tim.operator_timgcpsmsecretconfigs.yaml" ]; then
     echo "✅ Generated timgcpsmsecretconfig-crd.yaml"
 fi
 
+if [ -f "config/crd/secrets.tim.operator_timgcpsmclusterconfigs.yaml" ]; then
+    mv config/crd/secrets.tim.operator_timgcpsmclusterconfigs.yaml config/crd/timgcpsmclusterconfig-crd.yaml
+    echo "✅ Generated timgcpsmclusterconfig-crd.yaml"
+fi
+
 echo "✅ CRDs generated successfully!"
 

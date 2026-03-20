@@ -8,6 +8,7 @@ cd "$ROOT"
 
 kubectl apply -f config/crd/timgcpsmsecret-crd.yaml
 kubectl apply -f config/crd/timgcpsmsecretconfig-crd.yaml
+kubectl apply -f config/crd/timgcpsmclusterconfig-crd.yaml
 kubectl apply -f config/manager/namespace.yaml
 kubectl apply -f config/rbac/service_account.yaml
 kubectl apply -f config/rbac/role.yaml

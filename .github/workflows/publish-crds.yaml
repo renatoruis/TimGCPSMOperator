@@ -31,10 +31,13 @@ jobs:
           $(cat config/crd/timgcpsmsecret-crd.yaml)
           ---
           $(cat config/crd/timgcpsmsecretconfig-crd.yaml)
+          ---
+          $(cat config/crd/timgcpsmclusterconfig-crd.yaml)
           EOF
 
           cp config/crd/timgcpsmsecret-crd.yaml dist/
           cp config/crd/timgcpsmsecretconfig-crd.yaml dist/
+          cp config/crd/timgcpsmclusterconfig-crd.yaml dist/
 
       - name: Upload CRDs as artifact
         uses: actions/upload-artifact@v4

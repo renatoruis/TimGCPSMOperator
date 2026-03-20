@@ -38,6 +38,14 @@ rules:
       - list
       - watch
   - apiGroups:
+      - secrets.tim.operator
+    resources:
+      - timgcpsmclusterconfigs
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
       - ""
     resources:
       - secrets

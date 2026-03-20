@@ -68,11 +68,13 @@ docker-push: ## Push docker image with the manager.
 install: ## Install CRDs into the K8s cluster specified in ~/.kube/config.
 	kubectl apply -f config/crd/timgcpsmsecret-crd.yaml
 	kubectl apply -f config/crd/timgcpsmsecretconfig-crd.yaml
+	kubectl apply -f config/crd/timgcpsmclusterconfig-crd.yaml
 
 .PHONY: uninstall
 uninstall: ## Uninstall CRDs from the K8s cluster specified in ~/.kube/config.
 	kubectl delete -f config/crd/timgcpsmsecret-crd.yaml
 	kubectl delete -f config/crd/timgcpsmsecretconfig-crd.yaml
+	kubectl delete -f config/crd/timgcpsmclusterconfig-crd.yaml
 
 .PHONY: deploy
 deploy: ## Deploy controller to the K8s cluster specified in ~/.kube/config.

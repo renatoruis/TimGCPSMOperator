@@ -14,7 +14,11 @@ type TimGcpSmSecretSpec struct {
 	// +optional
 	GcpSmConfigNamespace string `json:"gcpSmConfigNamespace,omitempty"`
 
-	// ProjectID is the GCP project ID. Required unless provided via GcpSmConfig.
+	// ClusterConfig is the name of a cluster-scoped TimGcpSmClusterConfig (shared projectId). Ignored if projectId or gcpSmConfig is set.
+	// +optional
+	ClusterConfig string `json:"clusterConfig,omitempty"`
+
+	// ProjectID is the GCP project ID. Required unless provided via GcpSmConfig, ClusterConfig, or the cluster default (see TimGcpSmClusterConfig).
 	// +optional
 	ProjectID string `json:"projectId,omitempty"`
 

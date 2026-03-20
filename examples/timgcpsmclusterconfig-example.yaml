@@ -1,0 +1,8 @@
+# Um único objeto cluster-wide (nome recomendado: default).
+# TimGcpSmSecret sem projectId/gcpSmConfig/clusterConfig usa este projectId.
+apiVersion: secrets.tim.operator/v1alpha1
+kind: TimGcpSmClusterConfig
+metadata:
+  name: default
+spec:
+  projectId: my-gcp-project

@@ -40,6 +40,7 @@ func decodeFormat(spec secretsv1alpha1.TimGcpSmSecretSpec) string {
 // +kubebuilder:rbac:groups=secrets.tim.operator,resources=timgcpsmsecrets/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=secrets.tim.operator,resources=timgcpsmsecrets/finalizers,verbs=update
 // +kubebuilder:rbac:groups=secrets.tim.operator,resources=timgcpsmsecretconfigs,verbs=get;list;watch
+// +kubebuilder:rbac:groups=secrets.tim.operator,resources=timgcpsmclusterconfigs,verbs=get;list;watch
 // +kubebuilder:rbac:groups="",resources=secrets,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;update;patch
 // +kubebuilder:rbac:groups=coordination.k8s.io,resources=leases,verbs=get;list;watch;create;update;patch;delete
@@ -209,7 +210,31 @@ func (r *TimGcpSmSecretReconciler) resolveProjectID(ctx context.Context, ts *sec
 		}
 		return cfg.Spec.ProjectID, nil
 	}
-	return "", fmt.Errorf("either spec.projectId or spec.gcpSmConfig must be set")
+	if ts.Spec.ClusterConfig != "" {
+		return r.projectIDFromClusterConfig(ctx, ts.Spec.ClusterConfig)
+	}
+	cc := &secretsv1alpha1.TimGcpSmClusterConfig{}
+	if err := r.Get(ctx, types.NamespacedName{Name: secretsv1alpha1.DefaultClusterConfigName, Namespace: ""}, cc); err != nil {
+		if errors.IsNotFound(err) {
+			return "", fmt.Errorf("set spec.projectId, spec.gcpSmConfig, spec.clusterConfig, or create TimGcpSmClusterConfig/%s with spec.projectId", secretsv1alpha1.DefaultClusterConfigName)
+		}
+		return "", fmt.Errorf("get TimGcpSmClusterConfig %q: %w", secretsv1alpha1.DefaultClusterConfigName, err)
+	}
+	if cc.Spec.ProjectID == "" {
+		return "", fmt.Errorf("TimGcpSmClusterConfig %q has empty projectId", secretsv1alpha1.DefaultClusterConfigName)
+	}
+	return cc.Spec.ProjectID, nil
+}
+
+func (r *TimGcpSmSecretReconciler) projectIDFromClusterConfig(ctx context.Context, name string) (string, error) {
+	cc := &secretsv1alpha1.TimGcpSmClusterConfig{}
+	if err := r.Get(ctx, types.NamespacedName{Name: name, Namespace: ""}, cc); err != nil {
+		return "", fmt.Errorf("get TimGcpSmClusterConfig %q: %w", name, err)
+	}
+	if cc.Spec.ProjectID == "" {
+		return "", fmt.Errorf("TimGcpSmClusterConfig %q has empty projectId", name)
+	}
+	return cc.Spec.ProjectID, nil
 }
 
 func calculateHash(data map[string]string) string {
