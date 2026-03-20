@@ -1,0 +1,61 @@
+name: Publish CRDs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'config/crd/*.yaml'
+      - 'api/v1alpha1/*_types.go'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create CRDs artifact
+        run: |
+          mkdir -p dist
+
+          cat > dist/crds.yaml <<EOF
+          # TIMGCPSMOPERATOR CRDs
+          # Generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          # Commit: ${{ github.sha }}
+
+          ---
+          $(cat config/crd/timgcpsmsecret-crd.yaml)
+          ---
+          $(cat config/crd/timgcpsmsecretconfig-crd.yaml)
+          EOF
+
+          cp config/crd/timgcpsmsecret-crd.yaml dist/
+          cp config/crd/timgcpsmsecretconfig-crd.yaml dist/
+
+      - name: Upload CRDs as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: crds
+          path: dist/
+          retention-days: 90
+
+      - name: Commit and push to gh-pages (optional)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin gh-pages || git checkout --orphan gh-pages
+          git checkout gh-pages || git checkout --orphan gh-pages
+
+          git rm -rf . || true
+
+          cp -r dist/* .
+
+          git add .
+          git commit -m "Update CRDs from commit ${{ github.sha }}" || echo "No changes to commit"
+          git push origin gh-pages --force

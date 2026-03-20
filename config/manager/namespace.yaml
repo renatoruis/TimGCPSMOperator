@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: timgcpsm-operator-system
+  labels:
+    app.kubernetes.io/name: timgcpsm-operator
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/part-of: timgcpsm-operator
+    secrets.tim.operator/system: "true"

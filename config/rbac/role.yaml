@@ -1,0 +1,80 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: timgcpsm-operator-role
+rules:
+  - apiGroups:
+      - secrets.tim.operator
+    resources:
+      - timgcpsmsecrets
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - secrets.tim.operator
+    resources:
+      - timgcpsmsecrets/status
+    verbs:
+      - get
+      - update
+      - patch
+  - apiGroups:
+      - secrets.tim.operator
+    resources:
+      - timgcpsmsecrets/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - secrets.tim.operator
+    resources:
+      - timgcpsmsecretconfigs
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+    verbs:
+      - get
+      - list
+      - watch
+      - update
+      - patch
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - patch

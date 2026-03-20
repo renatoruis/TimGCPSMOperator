@@ -1,0 +1,98 @@
+# TIMGCPSMOPERATOR (timgcpsm-operator)
+
+![GitHub Release](https://img.shields.io/github/v/release/renatoruis/TimGcpSmOperator)
+
+Kubernetes operator **only for [Google Cloud Secret Manager](https://cloud.google.com/secret-manager)**. It syncs secrets into Kubernetes `Secret` objects on a configurable interval, detects changes (including updates made in the **GCP console** or **Secret Manager API**), and can **restart a `Deployment`** when the synced data changes.
+
+This is intentionally **not** External Secrets Operator: one backend, one workflow, and rollout-on-change as a first-class feature.
+
+## Features
+
+- **GCP Secret Manager only** — reads secret versions via Application Default Credentials (Workload Identity on GKE).
+- **Centralized project config** — optional `TimGcpSmSecretConfig` with `projectId` for many `TimGcpSmSecret` resources.
+- **Polling + hash** — periodic sync (`syncInterval`, default `5m`) so changes outside the cluster are picked up.
+- **Deployment restart** — optional `deploymentName`; rollout when secret payload changes.
+- **Payload modes** — `decodeFormat: text` (single key, default key `value`) or `json` (JSON object → multiple keys).
+- **Status** — conditions, `secretHash`, retries, last error.
+
+## Requirements
+
+- GKE (or GCP) with **Workload Identity** or other ADC for the operator pod’s GCP identity.
+- IAM: `roles/secretmanager.secretAccessor` on the secrets used (typically via WI on the operator’s GCP service account).
+
+## Installation
+
+O operador instala-se num **namespace dedicado** — `timgcpsm-operator-system` — definido em [`config/manager/namespace.yaml`](config/manager/namespace.yaml). O `Deployment`, `ServiceAccount` e o pod do controller ficam **só** aí; os teus `TimGcpSmSecret` e `Secret` de aplicação podem continuar noutros namespaces (via `spec.namespace` no CR).
+
+### Release (when published)
+
+```bash
+kubectl apply -f https://github.com/renatoruis/TimGcpSmOperator/releases/latest/download/install.yaml
+```
+
+### From this repository
+
+```bash
+kubectl apply -f config/crd/timgcpsmsecret-crd.yaml
+kubectl apply -f config/crd/timgcpsmsecretconfig-crd.yaml
+kubectl apply -f config/manager/namespace.yaml
+kubectl apply -f config/rbac/role.yaml
+kubectl apply -f config/rbac/service_account.yaml
+kubectl apply -f config/rbac/role_binding.yaml
+kubectl apply -f config/manager/deployment.yaml
+```
+
+### Build
+
+```bash
+make build
+make docker-build IMG=ghcr.io/renatoruis/timgcpsm-operator:v1.0.0
+```
+
+## Quick start
+
+1. **Optional:** create `TimGcpSmSecretConfig` with `spec.projectId` (see `examples/timgcpsmsecretconfig-example.yaml`).
+2. Create `TimGcpSmSecret` with `secretId`, `secretName`, and either `projectId` or `gcpSmConfig` (see `examples/`).
+
+```bash
+kubectl apply -f examples/timgcpsmsecretconfig-example.yaml
+kubectl apply -f examples/timgcpsmsecret-with-config.yaml
+```
+
+## CRDs
+
+| Resource | Short name | Purpose |
+|----------|------------|---------|
+| `TimGcpSmSecret` | `tgs` | Sync one GSM secret into a Kubernetes `Secret` |
+| `TimGcpSmSecretConfig` | `tgsc` | Default GCP `projectId` |
+
+### `TimGcpSmSecret` spec (summary)
+
+| Field | Description |
+|-------|-------------|
+| `projectId` | GCP project (omit if using `gcpSmConfig`) |
+| `gcpSmConfig` / `gcpSmConfigNamespace` | Reference to `TimGcpSmSecretConfig` |
+| `secretId` | Secret Manager secret id (short name) |
+| `secretVersion` | Version id or `latest` (default) |
+| `secretName` | Target Kubernetes `Secret` name |
+| `deploymentName` | Optional deployment to roll on change |
+| `namespace` | Namespace for `Secret` / `Deployment` (defaults to the CR’s namespace) |
+| `syncInterval` | e.g. `30s`, `5m` (min 30s, max 1h; default 5m) |
+| `decodeFormat` | `text` or `json` |
+| `secretKey` | Key for `text` mode (default `value`) |
+
+## Operations
+
+```bash
+kubectl get tgs -A
+kubectl describe tgs example-app-secrets
+kubectl logs -n timgcpsm-operator-system deployment/timgcpsm-operator-controller -f
+```
+
+## Capacity
+
+See [CAPACITY.md](CAPACITY.md) for tuning notes (same reconciliation model as the previous Vault-focused operator: `MaxConcurrentReconciles: 10`).
+
+## License
+
+See repository license file.

@@ -1,0 +1,121 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: timgcpsmoperator
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,value=latest
+
+      - name: Set image tag for manifest
+        id: image
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION="${VERSION#v}"
+          echo "tag=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Create release artifacts
+        run: |
+          mkdir -p release
+
+          cp config/crd/timgcpsmsecret-crd.yaml release/
+          cp config/crd/timgcpsmsecretconfig-crd.yaml release/
+
+          cat > release/install.yaml <<EOF
+          # TIMGCPSMOPERATOR Installation
+          # Version: ${{ github.ref_name }}
+          #
+          # Order: CRDs → Namespace → RBAC → Deployment
+
+          ---
+          $(cat config/crd/timgcpsmsecret-crd.yaml)
+          ---
+          $(cat config/crd/timgcpsmsecretconfig-crd.yaml)
+          ---
+          $(cat config/manager/namespace.yaml)
+          ---
+          $(cat config/rbac/role.yaml)
+          ---
+          $(cat config/rbac/service_account.yaml)
+          ---
+          $(cat config/rbac/role_binding.yaml)
+          ---
+          $(cat config/manager/deployment.yaml | sed "s|image: timgcpsm-operator:latest|image: ${{ steps.image.outputs.tag }}|g")
+          EOF
+
+          tar -czf release/examples.tar.gz examples/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            release/install.yaml
+            release/timgcpsmsecret-crd.yaml
+            release/timgcpsmsecretconfig-crd.yaml
+            release/examples.tar.gz
+          generate_release_notes: true
+          body: |
+            ## Installation
+
+            ### Quick Install
+            ```bash
+            kubectl apply -f https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/install.yaml
+            ```
+
+            ### Manual Install (CRDs)
+            ```bash
+            kubectl apply -f https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/timgcpsmsecret-crd.yaml
+            kubectl apply -f https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/timgcpsmsecretconfig-crd.yaml
+            ```
+
+            ### Docker Image
+            ```
+            ${{ steps.image.outputs.tag }}
+            ```
+
+            ## What's Changed
+            See the release notes below for details.
